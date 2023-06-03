@@ -1,4 +1,4 @@
-$configParams = Get-Content .\Integrations_Config.ps1 | ConvertFrom-Json
+$configParams = Get-Content "$PSScriptRoot\Integrations_Config.json" | ConvertFrom-Json
 
 function Send-Command {
 	param([string]$IPAddress, [string]$path, [string]$method, [string]$auth, [string]$data)
@@ -7,7 +7,7 @@ function Send-Command {
 	
 	If ($method -eq 'GET') {
 		$response = Invoke-RestMethod -Uri $uri -Method $method -Headers @{AUTH=$auth}
-	} ElseIf ($method -eq 'PUT') {
+	} ElseIf ($method -eq 'PUT' -or $method -eq 'POST') {
 		If ($path -eq '/pairing/start' -or $path -eq '/pairing/pair') {
 			$response = Invoke-RestMethod -Uri $uri -Method $method -Body $data -ContentType 'application/json'
 		} Else {
@@ -49,28 +49,29 @@ function Get-PowerStatus {
 	$pwrStatus = $response.ITEMS.VALUE
 	
 	If ($pwrStatus -eq 1) {
-		return 'on'
+		return 'on',$response
 	} ElseIf ($pwrStatus -eq 0) {
-		return 'off'
+		return 'off',$response
 	}
 }
 
 function Set-Power {
 	param([string]$action, [string]$IPAddress, [string]$auth)
 	
-	$pwrStatus = Get-PowerStatus -IPAddress $IPAddress -auth $auth
-	
+	$response = Get-PowerStatus -IPAddress $IPAddress -auth $auth
+	$pwrStatus = $response[1]
 	If ($action -eq 'on' -and $pwrStatus -eq 'off') {
 		$code = 1
 	} ElseIf ($action -eq 'off' -and $pwrStatus -eq 'on') {
-		$code = 0
+		$code = 2
 	} Else {
 		return
 	}
 	
 	$data = @{KEYLIST = @(@{CODESET=11; CODE=$code; ACTION='KEYPRESS'})} | ConvertTo-Json
 	$response = Send-Command -path '/key_command' -method 'PUT' -data $data -IPAddress $IPAddress -auth $auth
-	return
+    #$response = Send-Command -path '/key_command' -method 'POST' -data $data -IPAddress $IPAddress -auth $auth
+	return $response
 }
 
 function Get-InputList {

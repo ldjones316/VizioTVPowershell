@@ -1,0 +1,23 @@
+{
+	"VizioAPI": {
+		"Port": "7345"
+	},
+	"Xavier TV": {
+		"Name": "Xavier TV",
+		"IPAddress": "172.26.24.217",
+		"APIKey": "Zwg1d0dhjd",
+		"XboxInputName": "Xbox"
+	},
+    "Gabriel TV": {
+		"Name": "Gabriel TV",
+		"IPAddress": "172.26.24.235",
+		"APIKey": "Zwg1d0dhjd",
+		"XboxInputName": "Xbox"
+	},
+    "Amanda TV": {
+		"Name": "Amanda TV",
+		"IPAddress": "172.26.25.116",
+		"APIKey": "Zwg1d0dhjd",
+		"XboxInputName": "Xbox"
+	}
+}
