@@ -17,7 +17,7 @@ function Send-Command {
 	return $response
 }
 
-function Create-AuthKey {
+function New-AuthKey {
 	param([string]$deviceName, [int]$deviceId, [string]$IPAddress)
 
 	$payload = @{
